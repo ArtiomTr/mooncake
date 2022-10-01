@@ -1,0 +1,35 @@
+.footer {
+	font-size: 10px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 25px;
+}
+
+.footer__content {
+	width: 600px;
+}
+
+.play,
+.forward,
+.backward {
+	color: white;
+	height: 1.5rem;
+}
+
+.controls {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.button {
+	background: none;
+	border: none;
+	outline: none;
+}
+
+.button:focus {
+	outline: none;
+}

@@ -1,7 +1,9 @@
-import './App.css';
+import classes from './App.module.css';
 import { Canvas } from '@react-three/fiber';
 import { Fragment, Suspense, useRef, useState } from 'react';
 import { MoonScene } from './MoonScene';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 function App() {
 	const position = useRef({ top: -1, left: -1 });
@@ -13,7 +15,8 @@ function App() {
 	};
 
 	return (
-		<Fragment>
+		<div className={classes['app']}>
+			<Header />
 			<div
 				style={{
 					position: 'absolute',
@@ -48,7 +51,8 @@ function App() {
 					/>
 				</Suspense>
 			</Canvas>
-		</Fragment>
+			<Footer />
+		</div>
 	);
 }
 
