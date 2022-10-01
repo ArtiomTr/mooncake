@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from './components/App';
 import './index.css';
 
 // eslint-disable-next-line unicorn/prefer-query-selector
