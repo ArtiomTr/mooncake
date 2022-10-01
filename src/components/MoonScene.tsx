@@ -1,45 +1,9 @@
-import { useFrame } from '@react-three/fiber';
-import { useLoader, useThree } from '@react-three/fiber';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-	BufferAttribute,
-	BufferGeometry,
-	Camera,
-	Color,
-	EdgesGeometry,
-	Float32BufferAttribute,
-	Intersection,
-	Object3D,
-	Points,
-	TextureLoader,
-	Vector3,
-} from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import activityPointFragment from './activityPointFragment.glsl?raw';
-import activityPointVertex from './activityPointVertex.glsl?raw';
-
-const CameraController = () => {
-	const { camera, gl } = useThree();
-	const controls = useRef<OrbitControls>();
-
-	useEffect(() => {
-		const currentControls = new OrbitControls(camera, gl.domElement);
-
-		currentControls.minDistance = 2;
-		currentControls.maxDistance = 20;
-		currentControls.enableDamping = true;
-		currentControls.enablePan = false;
-		controls.current = currentControls;
-
-		return () => {
-			currentControls.dispose();
-		};
-	}, [camera, gl]);
-
-	useFrame(() => controls.current?.update());
-
-	return null;
-};
+import { useLoader } from '@react-three/fiber';
+import { useCallback, useMemo, useState } from 'react';
+import { Camera, Color, Float32BufferAttribute, Intersection, TextureLoader, Vector3 } from 'three';
+import activityPointFragment from '../shaders/activityPointFragment.glsl?raw';
+import activityPointVertex from '../shaders/activityPointVertex.glsl?raw';
+import { useCameraController } from './useCameraController';
 
 export type SeismicActivityPoint = {
 	amplitude: number;
@@ -81,6 +45,8 @@ const getScreenCoord = (position: Vector3, camera: Camera) => {
 };
 
 export const MoonScene = ({ points, onSelectedItemChange }: MoonSceneProps) => {
+	useCameraController();
+
 	const moonTexture = useLoader(TextureLoader, 'moon_surface.jpg');
 	const moonDisplacementMap = useLoader(TextureLoader, 'moon_displacement_map.jpg');
 	const discTexture = useLoader(TextureLoader, 'disc.png');
@@ -90,10 +56,13 @@ export const MoonScene = ({ points, onSelectedItemChange }: MoonSceneProps) => {
 	const { vertices, colors } = useMemo(() => {
 		return {
 			vertices: new Float32BufferAttribute(
-				points.map((point) => latLonToCoords(point.lat, point.lon, 1.05)).flat(1),
+				points.flatMap((point) => latLonToCoords(point.lat, point.lon, 1.05)),
 				3,
 			),
-			colors: new Float32BufferAttribute(points.map(() => new Color(0xffffff).toArray()).flat(1), 3),
+			colors: new Float32BufferAttribute(
+				points.flatMap(() => new Color(0xffffff).toArray()),
+				3,
+			),
 		};
 	}, [points]);
 
@@ -105,7 +74,9 @@ export const MoonScene = ({ points, onSelectedItemChange }: MoonSceneProps) => {
 	}, [points, hoveredItemIndex]);
 
 	const getPoint = useCallback((intersections: Intersection[]) => {
-		intersections.sort((a, b) => (a.distanceToRay ?? Infinity) - (b.distanceToRay ?? Infinity));
+		intersections.sort(
+			(a, b) => (a.distanceToRay ?? Number.POSITIVE_INFINITY) - (b.distanceToRay ?? Number.POSITIVE_INFINITY),
+		);
 
 		const item = intersections[0];
 		if (item.index !== undefined && item.distanceToRay !== undefined && item.distanceToRay <= 0.05) {
@@ -117,7 +88,6 @@ export const MoonScene = ({ points, onSelectedItemChange }: MoonSceneProps) => {
 
 	return (
 		<scene>
-			<CameraController />
 			<ambientLight color={0xffffff} intensity={0.05} />
 			<directionalLight color={0xffffff} position={[10, 0, 0]} intensity={1} />
 			<mesh>
@@ -130,30 +100,30 @@ export const MoonScene = ({ points, onSelectedItemChange }: MoonSceneProps) => {
 				/>
 			</mesh>
 			<points
-				onPointerDown={(e) => {
-					if (getPoint(e.intersections) !== -1) {
-						e.stopPropagation();
+				onPointerDown={(event) => {
+					if (getPoint(event.intersections) !== -1) {
+						event.stopPropagation();
 					} else {
 						onSelectedItemChange(-1, { top: -1, left: -1 });
 					}
 				}}
-				onClick={(e) => {
-					const pointIndex = getPoint(e.intersections);
+				onClick={(event) => {
+					const pointIndex = getPoint(event.intersections);
 
 					let top = 0;
 					let left = 0;
 
 					if (pointIndex !== -1) {
-						const position = getScreenCoord(e.intersections[pointIndex].point, e.camera);
+						const position = getScreenCoord(event.intersections[pointIndex].point, event.camera);
 
 						top = position.y;
 						left = position.x;
-						e.stopPropagation();
+						event.stopPropagation();
 					}
 
 					onSelectedItemChange(pointIndex, { top, left });
 				}}
-				onPointerMove={(e) => setHoveredItemIndex(getPoint(e.intersections))}
+				onPointerMove={(event) => setHoveredItemIndex(getPoint(event.intersections))}
 			>
 				<bufferGeometry
 					attributes={{

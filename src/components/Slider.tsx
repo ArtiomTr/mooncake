@@ -1,5 +1,5 @@
-import classes from './Slider.module.css';
 import * as SliderPrimitive from '@radix-ui/react-slider';
+import classes from './Slider.module.css';
 
 export const Slider = () => {
 	return (
