@@ -18,8 +18,8 @@ const CameraController = () => {
 };
 
 export const MoonScene = () => {
-	const moonTexture = useLoader(TextureLoader, './assets/moon_surface.jpg');
-	const moonDisplacementMap = useLoader(TextureLoader, './assets/moon_displacement_map.jpg');
+	const moonTexture = useLoader(TextureLoader, 'moon_surface.jpg');
+	const moonDisplacementMap = useLoader(TextureLoader, 'moon_displacement_map.jpg');
 
 	return (
 		<scene>
