@@ -1,7 +1,7 @@
-import { BackwardIcon } from './BackwardIcon';
 import classes from './Footer.module.css';
-import { ForwardIcon } from './ForwardIcon';
-import { PlayIcon } from './PlayIcon';
+import { BackwardIcon } from './icons/BackwardIcon';
+import { ForwardIcon } from './icons/ForwardIcon';
+import { PlayIcon } from './icons/PlayIcon';
 import { Slider } from './Slider';
 
 export const Footer = () => {

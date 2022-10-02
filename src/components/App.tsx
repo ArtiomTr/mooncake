@@ -4,6 +4,7 @@ import classes from './App.module.css';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { MoonScene } from './MoonScene';
+import { SeismicActivityDialog } from './SeismicActivityDialog';
 
 export const App = () => {
 	const [, setSelectedItemIndex] = useState(-1);
@@ -14,6 +15,7 @@ export const App = () => {
 
 	return (
 		<div className={classes['app']}>
+			<SeismicActivityDialog />
 			<Header />
 			<Canvas>
 				<Suspense fallback={undefined}>
